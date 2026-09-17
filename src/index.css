@@ -5,25 +5,29 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Design tokens from the Figma file (Master data - Design Delivery) */
+/* Colour tokens from the design system components file ([DS] Components), the source of truth */
 @theme {
     --color-grey-000: #ffffff;
-    --color-grey-100: #f8f9fb;
-    --color-grey-200: #eff2f5;
-    --color-grey-300: #e0e5ea;
+    --color-grey-100: #f7f9fb;
+    --color-grey-200: #eceff2;
+    --color-grey-300: #dadfe3;
     --color-grey-400: #ccd2d7;
-    --color-grey-500: #afb5ba;
-    --color-grey-600: #92999f;
-    --color-grey-700: #757b81;
-    --color-grey-800: #545c62;
-    --color-grey-900: #3f464c;
-    --color-grey-1000: #252c33;
-    --color-grey-1100: #121619;
-    --color-primary-100: #e6f1ff;
-    --color-primary-500: #003de4;
-    --color-primary-600: #0033bd;
-    --color-nav-active: #e7eaee;
-    --color-avatar: #5ea8ff;
+    --color-grey-500: #a6acb1;
+    --color-grey-600: #838a90;
+    --color-grey-700: #666d72;
+    --color-grey-800: #495157;
+    --color-grey-900: #2a3137;
+    --color-grey-1000: #0f171d;
+    --color-primary-100: #e6f6ff;
+    --color-primary-200: #d0ecff;
+    --color-primary-300: #96c4ff;
+    --color-primary-400: #1047a3;
+    --color-primary-500: #002773;
+    --color-primary-600: #000050;
+    --color-danger-500: #be3a46; /* System/Danger/500 */
+    --color-success-200: #d8fce1; /* System/Success/200 */
+    --color-success-400: #009c41; /* System/Success/400 */
+    --color-avatar: #5ea8ff; /* DataViz/Categorical/1 */
 
     --shadow-card: 0 0 1px 0 rgb(52 58 63 / 0.1), 0 1px 5px 0 rgb(52 58 63 / 0.1);
     --shadow-pinned: 0 1px 4px 0 rgb(52 58 63 / 0.05), 0 4px 12px 0 rgb(52 58 63 / 0.12);
@@ -73,24 +77,24 @@
 }
 
 :root {
-    --background: #f8f9fb;
-    --foreground: #252c33;
-    --card: #ffffff;
-    --card-foreground: #252c33;
-    --popover: #ffffff;
-    --popover-foreground: #252c33;
-    --primary: #003de4;
-    --primary-foreground: #ffffff;
-    --secondary: #eff2f5;
-    --secondary-foreground: #252c33;
-    --muted: #eff2f5;
-    --muted-foreground: #757b81;
-    --accent: #eff2f5;
-    --accent-foreground: #252c33;
+    --background: var(--color-grey-100);
+    --foreground: var(--color-grey-1000);
+    --card: var(--color-grey-000);
+    --card-foreground: var(--color-grey-1000);
+    --popover: var(--color-grey-000);
+    --popover-foreground: var(--color-grey-1000);
+    --primary: var(--color-primary-500);
+    --primary-foreground: var(--color-grey-000);
+    --secondary: var(--color-grey-200);
+    --secondary-foreground: var(--color-grey-1000);
+    --muted: var(--color-grey-200);
+    --muted-foreground: var(--color-grey-700);
+    --accent: var(--color-grey-200);
+    --accent-foreground: var(--color-grey-1000);
     --destructive: oklch(0.577 0.245 27.325);
-    --border: #e0e5ea;
-    --input: #afb5ba;
-    --ring: #003de4;
+    --border: var(--color-grey-300);
+    --input: var(--color-grey-500);
+    --ring: var(--color-primary-500);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
@@ -151,6 +155,17 @@
   html {
     @apply font-sans;
     }
+  /* Hand cursor on everything clickable; disabled controls keep their own cursor */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href],
+  summary,
+  label:has(button[role="checkbox"]:not(:disabled)),
+  label:has(button[role="radio"]:not(:disabled)),
+  label:has(input[type="checkbox"]:not(:disabled)),
+  label:has(input[type="radio"]:not(:disabled)) {
+    cursor: pointer;
+  }
 }
 /* Figma "Scroll Bar": 4px grey thumb, no track */
 @utility scrollbar-thin {

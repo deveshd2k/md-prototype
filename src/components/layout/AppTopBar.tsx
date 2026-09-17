@@ -26,7 +26,7 @@ export function AppTopBar() {
             </button>
           ))}
         </nav>
-        <button type="button" aria-current="page" className={`${itemClass} bg-nav-active text-grey-1100 hover:bg-nav-active`}>
+        <button type="button" aria-current="page" className={`${itemClass} bg-grey-200 text-grey-1000 hover:bg-grey-200`}>
           Settings
         </button>
       </div>

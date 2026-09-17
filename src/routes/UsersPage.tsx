@@ -1,15 +1,13 @@
 import { useMemo, useState } from 'react'
+import { AddUsersDialog } from '@/components/master-data/add-users/AddUsersDialog'
 import { TablePagination } from '@/components/master-data/TablePagination'
-import { UsersTable, type Sort } from '@/components/master-data/UsersTable'
+import { UsersTable, type UserSort } from '@/components/master-data/UsersTable'
 import { UsersToolbar, type UserFilters } from '@/components/master-data/UsersToolbar'
 import { SettingsBar } from '@/components/layout/SettingsBar'
 import { useUsers } from '@/data/users'
-import type { User } from '@/types/user'
+import { matchesSearchAndFilters, sortRows, uniqueSorted } from '@/lib/table'
 
 const noFilters: UserFilters = { agency: [], department: [], location: [] }
-
-const uniqueSorted = (users: User[], key: keyof UserFilters) =>
-  [...new Set(users.map((user) => user[key]))].sort((a, b) => a.localeCompare(b))
 
 // Settings → Users (Figma: "Settings - users - user details")
 export function UsersPage() {
@@ -17,10 +15,11 @@ export function UsersPage() {
 
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<UserFilters>(noFilters)
-  const [sort, setSort] = useState<Sort>(null)
+  const [sort, setSort] = useState<UserSort>(null)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [addOpen, setAddOpen] = useState(false)
 
   const filterOptions = useMemo<UserFilters>(
     () => ({
@@ -31,25 +30,10 @@ export function UsersPage() {
     [allUsers],
   )
 
-  const visibleUsers = useMemo(() => {
-    const query = search.trim().toLowerCase()
-    const matches = allUsers.filter(
-      (user) =>
-        (!query || user.full_name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query)) &&
-        (filters.agency.length === 0 || filters.agency.includes(user.agency)) &&
-        (filters.department.length === 0 || filters.department.includes(user.department)) &&
-        (filters.location.length === 0 || filters.location.includes(user.location)),
-    )
-    if (!sort) return matches
-    const factor = sort.direction === 'asc' ? 1 : -1
-    return [...matches].sort((a, b) => {
-      const left = a[sort.key]
-      const right = b[sort.key]
-      const result =
-        typeof left === 'boolean' ? Number(left) - Number(right) : String(left).localeCompare(String(right))
-      return result * factor
-    })
-  }, [allUsers, search, filters, sort])
+  const visibleUsers = useMemo(
+    () => sortRows(allUsers.filter((user) => matchesSearchAndFilters(user, search, filters)), sort),
+    [allUsers, search, filters, sort],
+  )
 
   const pageCount = Math.max(1, Math.ceil(visibleUsers.length / pageSize))
   const currentPage = Math.min(page, pageCount)
@@ -71,12 +55,14 @@ export function UsersPage() {
             setFilters(next)
             setPage(1)
           }}
+          onAddUser={() => setAddOpen(true)}
         />
         <section className="mt-4 rounded-lg bg-white px-4 pt-3 pb-4 shadow-card">
           <UsersTable
             status={status}
             errorMessage={error?.message}
             users={pageUsers}
+            hasAnyUsers={allUsers.length > 0}
             sort={sort}
             onSortChange={setSort}
             selectedIds={selectedIds}
@@ -96,6 +82,7 @@ export function UsersPage() {
           </div>
         </section>
       </div>
+      <AddUsersDialog open={addOpen} onOpenChange={setAddOpen} />
     </>
   )
 }

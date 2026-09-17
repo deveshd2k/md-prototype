@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router'
+import { InvertedActionButton, InvertedActionLink } from '@/components/ui/action-button'
 
 const tabs = [
   { label: 'Agency settings' },
@@ -7,8 +7,6 @@ const tabs = [
   { label: 'Direct permissions' },
   { label: 'Delegations' },
 ]
-
-const tabClass = 'rounded-md px-2 py-[5px] text-sm leading-[22px] font-semibold text-white hover:bg-white/10'
 
 // Dark Settings sub-navigation (Figma: "Frame 1321316816")
 export function SettingsBar() {
@@ -19,13 +17,11 @@ export function SettingsBar() {
         <nav className="flex items-center gap-4">
           {tabs.map((tab) =>
             tab.to ? (
-              <NavLink key={tab.label} to={tab.to} className={tabClass}>
+              <InvertedActionLink key={tab.label} to={tab.to}>
                 {tab.label}
-              </NavLink>
+              </InvertedActionLink>
             ) : (
-              <button key={tab.label} type="button" className={tabClass}>
-                {tab.label}
-              </button>
+              <InvertedActionButton key={tab.label}>{tab.label}</InvertedActionButton>
             ),
           )}
         </nav>
