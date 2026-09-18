@@ -45,6 +45,7 @@ type UsersTableProps = {
   onSortChange: (sort: UserSort) => void
   selectedIds: Set<string>
   onSelectionChange: (ids: Set<string>) => void
+  onRowClick: (user: User) => void
 }
 
 export function UsersTable({ errorMessage, users, hasAnyUsers, ...props }: UsersTableProps) {

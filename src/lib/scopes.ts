@@ -1,4 +1,10 @@
-import type { OptionList, RoleScopes, ScopeOption, ScopeType } from '@/types/roles'
+import type { OptionList, RoleScopes, ScopeLevel, ScopeOption, ScopeType } from '@/types/roles'
+
+// Scope levels, in the order they appear in the designs
+export const scopeLevels: { level: ScopeLevel; title: string }[] = [
+  { level: 'organisation', title: 'Organisation' },
+  { level: 'client_brand', title: 'Clients & Brands' },
+]
 
 // Plural nouns for "All (N …)"
 const pluralNouns: Record<OptionList, string> = {

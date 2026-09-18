@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react'
 import { AddUsersDialog } from '@/components/master-data/add-users/AddUsersDialog'
 import { TablePagination } from '@/components/master-data/TablePagination'
+import { UserDetailsSheet } from '@/components/master-data/UserDetailsSheet'
 import { UsersTable, type UserSort } from '@/components/master-data/UsersTable'
 import { UsersToolbar, type UserFilters } from '@/components/master-data/UsersToolbar'
 import { SettingsBar } from '@/components/layout/SettingsBar'
 import { useUsers } from '@/data/users'
 import { matchesSearchAndFilters, sortRows, uniqueSorted } from '@/lib/table'
+import type { User } from '@/types/user'
 
 const noFilters: UserFilters = { agency: [], department: [], location: [] }
 
@@ -20,6 +22,7 @@ export function UsersPage() {
   const [pageSize, setPageSize] = useState(10)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [addOpen, setAddOpen] = useState(false)
+  const [openUser, setOpenUser] = useState<User | null>(null)
 
   const filterOptions = useMemo<UserFilters>(
     () => ({
@@ -67,6 +70,7 @@ export function UsersPage() {
             onSortChange={setSort}
             selectedIds={selectedIds}
             onSelectionChange={setSelectedIds}
+            onRowClick={setOpenUser}
           />
           <div className="mt-3">
             <TablePagination
@@ -83,6 +87,7 @@ export function UsersPage() {
         </section>
       </div>
       <AddUsersDialog open={addOpen} onOpenChange={setAddOpen} />
+      <UserDetailsSheet user={openUser} onOpenChange={(open) => !open && setOpenUser(null)} />
     </>
   )
 }

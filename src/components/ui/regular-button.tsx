@@ -8,6 +8,7 @@ const variants = {
   primary: 'bg-primary-500 text-white enabled:hover:bg-primary-400 enabled:active:bg-primary-600',
   secondary:
     'border border-primary-500 text-primary-500 enabled:hover:bg-primary-100 enabled:active:border-primary-600 enabled:active:bg-primary-200 enabled:active:text-primary-600',
+  danger: 'bg-danger-500 text-white enabled:hover:bg-danger-400 enabled:active:bg-danger-600',
 }
 
 const sizes = {

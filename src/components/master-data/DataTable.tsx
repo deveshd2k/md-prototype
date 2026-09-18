@@ -24,6 +24,7 @@ type DataTableProps<T extends { id: string }> = {
   onSortChange: (sort: Sort<keyof T & string>) => void
   selectedIds: Set<string>
   onSelectionChange: (ids: Set<string>) => void
+  onRowClick?: (row: T) => void
   className?: string // scroll container; add a height + overflow-y to get a sticky header
 }
 
@@ -48,6 +49,7 @@ export function DataTable<T extends { id: string }>({
   onSortChange,
   selectedIds,
   onSelectionChange,
+  onRowClick,
   className = 'overflow-x-auto pb-3',
 }: DataTableProps<T>) {
   const [scrolled, setScrolled] = useState(false)
@@ -140,8 +142,14 @@ export function DataTable<T extends { id: string }>({
             rows.map((row) => {
               const selected = selectedIds.has(row.id)
               return (
-                <tr key={row.id} className="group" data-selected={selected || undefined}>
-                  <td className={`${cellClass} sticky left-0 z-10 pr-0 pl-4`}>
+                <tr
+                  key={row.id}
+                  className={`group ${onRowClick ? 'cursor-pointer' : ''}`}
+                  data-selected={selected || undefined}
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                >
+                  {/* Clicking the checkbox must not also open the row */}
+                  <td className={`${cellClass} sticky left-0 z-10 pr-0 pl-4`} onClick={(event) => event.stopPropagation()}>
                     <Checkbox
                       aria-label={`Select ${rowLabel(row)}`}
                       checked={selected}

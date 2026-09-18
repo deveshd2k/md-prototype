@@ -24,7 +24,9 @@
     --color-primary-400: #1047a3;
     --color-primary-500: #002773;
     --color-primary-600: #000050;
+    --color-danger-400: #e15a62; /* System/Danger/400 */
     --color-danger-500: #be3a46; /* System/Danger/500 */
+    --color-danger-600: #9a142b; /* System/Danger/600 */
     --color-success-200: #d8fce1; /* System/Success/200 */
     --color-success-400: #009c41; /* System/Success/400 */
     --color-avatar: #5ea8ff; /* DataViz/Categorical/1 */

@@ -7,17 +7,19 @@ type SearchInputProps = {
   onChange: (value: string) => void
   autoFocus?: boolean
   placeholder?: string
+  fullWidth?: boolean
 }
 
 // Design system "Input / Search", size S.
 // Hint: grey border · Hover: light fill, darker border · Active (typing): darkest border ·
 // a clear (✕) button shows while there is text and the field is hovered or focused.
-export function SearchInput({ value, onChange, autoFocus, placeholder = 'Search by name or email' }: SearchInputProps) {
+export function SearchInput({ value, onChange, autoFocus, placeholder = 'Search by name or email', fullWidth }: SearchInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   return (
     <div
       className={[
-        'group/search flex h-8 w-60 shrink-0 items-center gap-2 rounded-md border bg-white pr-2.5 pl-2',
+        'group/search flex h-8 shrink-0 items-center gap-2 rounded-md border bg-white pr-2.5 pl-2',
+        fullWidth ? 'w-full' : 'w-60',
         'border-grey-500 hover:border-grey-700 hover:bg-grey-100',
         'focus-within:border-grey-800 focus-within:bg-white focus-within:hover:border-grey-800',
       ].join(' ')}
