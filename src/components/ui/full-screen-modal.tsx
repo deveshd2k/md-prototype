@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { Dialog } from 'radix-ui'
 import closeIcon from '@/assets/figma/close.svg'
 import { PortalContainerContext } from '@/components/ui/portal-container'
+import { useModalToastPosition } from '@/components/ui/toast-context'
 
 type FullScreenModalProps = {
   open: boolean
@@ -16,6 +17,7 @@ type FullScreenModalProps = {
 // Clicking the backdrop does not close it, so a half-finished flow isn't lost by accident.
 export function FullScreenModal({ open, onOpenChange, title, children, actions, leftActions }: FullScreenModalProps) {
   const [content, setContent] = useState<HTMLDivElement | null>(null)
+  useModalToastPosition(open)
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>

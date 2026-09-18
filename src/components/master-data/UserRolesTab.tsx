@@ -1,10 +1,17 @@
 import { useMemo, useState } from 'react'
 import addPrimaryIcon from '@/assets/figma/add-primary.svg'
+import editIcon from '@/assets/figma/edit.svg'
 import moreIcon from '@/assets/figma/more.svg'
+import removeIcon from '@/assets/figma/remove-circle.svg'
 import subItemsIcon from '@/assets/figma/sub-items.svg'
 import { AssignRoleDialog } from '@/components/master-data/AssignRoleDialog'
+import { EditRoleScopeDialog } from '@/components/master-data/EditRoleScopeDialog'
 import { SearchInput } from '@/components/master-data/SearchInput'
+import { ConfirmModal } from '@/components/ui/confirm-modal'
+import { ContextMenu } from '@/components/ui/menu'
 import { RegularButton } from '@/components/ui/regular-button'
+import { useToast } from '@/components/ui/toast-context'
+import { useRemoveRole } from '@/data/remove-role'
 import { useScopeOptions, useScopeTypes } from '@/data/scopes'
 import { useUserRoles, type AssignedRole } from '@/data/user-roles'
 import { ALL_VALUES, scopeLevels } from '@/lib/scopes'
@@ -15,6 +22,24 @@ import type { User } from '@/types/user'
 export function UserRolesTab({ user }: { user: User }) {
   const { data: assigned = [], status, error } = useUserRoles(user.id)
   const [assignOpen, setAssignOpen] = useState(false)
+  const [editing, setEditing] = useState<AssignedRole | null>(null)
+  const [removing, setRemoving] = useState<AssignedRole | null>(null)
+  const removeRole = useRemoveRole()
+  const { showSuccess } = useToast()
+
+  const confirmRemove = () => {
+    if (!removing) return
+    const name = removing.role.name
+    removeRole.mutate(
+      { userId: user.id, roleId: removing.role_id },
+      {
+        onSuccess: () => {
+          showSuccess(`${name} unassigned from user`)
+          setRemoving(null)
+        },
+      },
+    )
+  }
   const { data: scopeTypes = [] } = useScopeTypes()
   const { data: scopeOptions = [] } = useScopeOptions()
   const [search, setSearch] = useState('')
@@ -79,12 +104,34 @@ export function UserRolesTab({ user }: { user: User }) {
           ) : (
             <div className="flex flex-col gap-3">
               {visible.map(({ item, groups }) => (
-                <RoleCard key={item.id} name={item.role.name} groups={groups} />
+                <RoleCard
+                  key={item.id}
+                  name={item.role.name}
+                  groups={groups}
+                  onEdit={() => setEditing(item)}
+                  onRemove={() => setRemoving(item)}
+                />
               ))}
             </div>
           )}
         </>
       )}
+      <EditRoleScopeDialog user={user} assigned={editing} onClose={() => setEditing(null)} />
+      <ConfirmModal
+        open={removing !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setRemoving(null)
+            removeRole.reset()
+          }
+        }}
+        title="Remove permission role?"
+        description="Are you sure you want to remove the permission role? User will lose all permissions associated with this role. This will be done immediately."
+        confirmLabel={removeRole.isPending ? 'Removing…' : 'Remove'}
+        busy={removeRole.isPending}
+        error={removeRole.isError ? `Couldn’t remove the role. ${removeRole.error.message}` : undefined}
+        onConfirm={confirmRemove}
+      />
       <AssignRoleDialog
         open={assignOpen}
         onOpenChange={setAssignOpen}
@@ -98,18 +145,37 @@ export function UserRolesTab({ user }: { user: User }) {
 type ScopeGroup = { title: string; lines: { label: string; values: string }[] }
 
 // Figma "[MD] - Role card"
-function RoleCard({ name, groups }: { name: string; groups: ScopeGroup[] }) {
+function RoleCard({
+  name,
+  groups,
+  onEdit,
+  onRemove,
+}: {
+  name: string
+  groups: ScopeGroup[]
+  onEdit: () => void
+  onRemove: () => void
+}) {
   return (
     <article className="relative flex flex-col gap-2 rounded-lg bg-grey-100 p-3">
       <div className="flex items-start gap-3">
         <h4 className="min-w-0 flex-1 truncate text-base leading-6 font-semibold text-grey-1000">{name}</h4>
-        <button
-          type="button"
-          aria-label={`Actions for ${name}`}
-          className="-mt-1 -mr-1 flex shrink-0 rounded-md p-1.5 outline-none hover:bg-grey-700/12 focus-visible:ring-2 focus-visible:ring-primary-500/40 active:bg-grey-800/18"
-        >
-          <img src={moreIcon} alt="" className="size-5" />
-        </button>
+        <ContextMenu
+          label={`Actions for ${name}`}
+          items={[
+            { label: 'Edit role access scope', icon: <img src={editIcon} alt="" className="size-5" />, onSelect: onEdit },
+            { label: 'Remove role', icon: <img src={removeIcon} alt="" className="size-5" />, onSelect: onRemove },
+          ]}
+          trigger={
+            <button
+              type="button"
+              aria-label={`Actions for ${name}`}
+              className="-mt-1 -mr-1 flex shrink-0 rounded-md p-1.5 outline-none hover:bg-grey-700/12 focus-visible:ring-2 focus-visible:ring-primary-500/40 active:bg-grey-800/18"
+            >
+              <img src={moreIcon} alt="" className="size-5" />
+            </button>
+          }
+        />
       </div>
       {groups.length > 0 && (
         <div className="flex items-start gap-2 pr-1">

@@ -47,12 +47,41 @@ export function isAllPicked(type: ScopeType, all: ScopeOption[], scopes: RoleSco
   return total > 1 && picks.length === total && optionsFor(type, all, scopes).length === total
 }
 
-// "None" · "All (4 regions)" · "Shell, Unilever"
+// Long lists are shortened to what fits, plus "+N" for the rest
+const VALUE_CHARS = 46
+
+// "None" · "All (4 regions)" · "Shell, Unilever" · "Gillette, Ivory, Native, +5"
 export function formatScopeValue(type: ScopeType, all: ScopeOption[], scopes: RoleScopes): string {
   const picks = scopes[type.key] ?? []
   if (picks.length === 0) return 'None'
   if (isAllPicked(type, all, scopes)) return `All (${picks.length} ${pluralNouns[type.option_list]})`
-  return picks.join(', ')
+  const shown: string[] = []
+  let length = 0
+  for (const pick of picks) {
+    const next = length + pick.length + (shown.length ? 2 : 0)
+    if (shown.length > 0 && next > VALUE_CHARS) break
+    shown.push(pick)
+    length = next
+  }
+  const rest = picks.length - shown.length
+  return rest > 0 ? `${shown.join(', ')}, +${rest}` : shown.join(', ')
+}
+
+// Saved scopes back into the shape the pickers use: "All" becomes every value of that type
+export function expandScopes(
+  types: ScopeType[],
+  all: ScopeOption[],
+  saved: { scope_type: string; value: string }[],
+): RoleScopes {
+  const scopes: RoleScopes = {}
+  for (const type of types) {
+    const values = saved.filter((row) => row.scope_type === type.key).map((row) => row.value)
+    if (values.length === 0) continue
+    scopes[type.key] = values.includes(ALL_VALUES)
+      ? all.filter((option) => option.list === type.option_list).map((option) => option.value)
+      : values
+  }
+  return scopes
 }
 
 export function hasAnyScope(scopes: RoleScopes): boolean {

@@ -10,10 +10,11 @@ type ScopeCardsProps = {
   onScopesChange: (scopes: RoleScopes) => void
   titles?: Partial<Record<ScopeLevel, string>> // override the card headings
   fieldWidth?: string // width of the select column
+  describe?: (type: ScopeType) => string // override the text under each label
 }
 
 // One card per scope level, with a multi-select per scope type
-export function ScopeCards({ types, options, scopes, onScopesChange, titles, fieldWidth = 'w-[500px]' }: ScopeCardsProps) {
+export function ScopeCards({ types, options, scopes, onScopesChange, titles, fieldWidth = 'w-[500px]', describe }: ScopeCardsProps) {
   // Changing one scope type can invalidate picks in another (e.g. brands of an unselected client)
   const change = (type: ScopeType, picks: string[]) =>
     onScopesChange(pruneScopes(types, options, { ...scopes, [type.key]: picks }))
@@ -31,7 +32,7 @@ export function ScopeCards({ types, options, scopes, onScopesChange, titles, fie
                 <div key={type.key} className="flex items-center justify-between gap-6">
                   <div className="flex min-w-0 flex-col text-grey-800">
                     <span className="text-sm leading-[22px] font-semibold">{type.label}</span>
-                    <span className="text-xs leading-5">{type.description}</span>
+                    <span className="text-xs leading-5">{describe ? describe(type) : type.description}</span>
                   </div>
                   <div className={`${fieldWidth} shrink-0`}>
                     <FilterSelect

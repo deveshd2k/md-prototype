@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import closeIcon from '@/assets/figma/close-white.svg'
 import successIcon from '@/assets/figma/success.svg'
 import { ToastContext } from '@/components/ui/toast-context'
@@ -11,16 +11,30 @@ type Toast = { id: number; message: ReactNode }
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
 
+  const [modalCount, setModalCount] = useState(0)
+
   const dismiss = useCallback((id: number) => setToasts((current) => current.filter((toast) => toast.id !== id)), [])
   const showSuccess = useCallback((message: ReactNode) => {
     setToasts((current) => [...current, { id: Date.now() + Math.random(), message }])
   }, [])
+  const registerModal = useCallback(() => {
+    setModalCount((count) => count + 1)
+    return () => setModalCount((count) => count - 1)
+  }, [])
+  const value = useMemo(() => ({ showSuccess, registerModal }), [showSuccess, registerModal])
 
   return (
-    <ToastContext.Provider value={{ showSuccess }}>
+    <ToastContext.Provider value={value}>
       {children}
-      {/* OS bar (64px) + Work management bar (57px) + 16px gap */}
-      <div aria-live="polite" className="fixed top-[137px] right-4 z-[60] flex flex-col items-end gap-2">
+      {/* Below the Work management bar (64 + 57 + 16), or 16px from the top while a modal covers it.
+          pointer-events-auto keeps the toast clickable: modals switch off pointer events elsewhere. */}
+      <div
+        aria-live="polite"
+        data-toast-viewport=""
+        className={`pointer-events-auto fixed right-4 z-[60] flex flex-col items-end gap-2 ${
+          modalCount > 0 ? 'top-4' : 'top-[137px]'
+        }`}
+      >
         {toasts.map((toast) => (
           <SuccessToast key={toast.id} message={toast.message} onClose={() => dismiss(toast.id)} />
         ))}

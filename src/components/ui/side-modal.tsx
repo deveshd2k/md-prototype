@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Dialog } from 'radix-ui'
 import closeIcon from '@/assets/figma/close.svg'
 import { PortalContainerContext } from '@/components/ui/portal-container'
+import { useModalToastPosition } from '@/components/ui/toast-context'
 import { useState } from 'react'
 
 type SideModalProps = {
@@ -16,6 +17,7 @@ type SideModalProps = {
 // Design system "Side Modal": 760px panel sliding in from the right, with a 24px header
 export function SideModal({ open, onOpenChange, title, children, actions, leftActions }: SideModalProps) {
   const [content, setContent] = useState<HTMLDivElement | null>(null)
+  useModalToastPosition(open)
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -23,6 +25,10 @@ export function SideModal({ open, onOpenChange, title, children, actions, leftAc
         <Dialog.Content
           ref={setContent}
           aria-describedby={undefined}
+          // The panel closes only from its own buttons (Close / Cancel), never from a click
+          // outside it or the Escape key — so a toast or a stray click can't dismiss it.
+          onInteractOutside={(event) => event.preventDefault()}
+          onEscapeKeyDown={(event) => event.preventDefault()}
           // Focus the panel itself rather than the close button, so no focus ring flashes on open
           onOpenAutoFocus={(event) => {
             event.preventDefault()
