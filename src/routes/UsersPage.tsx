@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { AddUsersDialog } from '@/components/master-data/add-users/AddUsersDialog'
 import { TablePagination } from '@/components/master-data/TablePagination'
 import { UserDetailsSheet } from '@/components/master-data/UserDetailsSheet'
+import { userSearchKeys } from '@/components/master-data/user-columns'
 import { UsersTable, type UserSort } from '@/components/master-data/UsersTable'
 import { UsersToolbar, type UserFilters } from '@/components/master-data/UsersToolbar'
 import { SettingsBar } from '@/components/layout/SettingsBar'
@@ -34,7 +35,7 @@ export function UsersPage() {
   )
 
   const visibleUsers = useMemo(
-    () => sortRows(allUsers.filter((user) => matchesSearchAndFilters(user, search, filters)), sort),
+    () => sortRows(allUsers.filter((user) => matchesSearchAndFilters(user, search, filters, userSearchKeys)), sort),
     [allUsers, search, filters, sort],
   )
 
@@ -66,6 +67,7 @@ export function UsersPage() {
             errorMessage={error?.message}
             users={pageUsers}
             hasAnyUsers={allUsers.length > 0}
+            search={search}
             sort={sort}
             onSortChange={setSort}
             selectedIds={selectedIds}

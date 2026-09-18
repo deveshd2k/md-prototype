@@ -21,14 +21,21 @@ export function uniqueSorted<T>(rows: T[], key: keyof T): string[] {
 
 export type Filters<K extends string> = Record<K, string[]>
 
-// Search by name/email plus "any of" matching per filter; an empty filter matches everything
-export function matchesSearchAndFilters<T extends { full_name: string; email: string }, K extends keyof T & string>(
+// A field as the table shows it, so search matches what people can actually read
+export function searchText(value: unknown): string {
+  if (typeof value === 'boolean') return value ? 'On' : 'Off'
+  return value == null ? '' : String(value)
+}
+
+// Search across the given columns plus "any of" matching per filter; an empty filter matches everything
+export function matchesSearchAndFilters<T, K extends keyof T & string>(
   row: T,
   search: string,
   filters: Filters<K>,
+  searchKeys: (keyof T & string)[],
 ): boolean {
   const query = search.trim().toLowerCase()
-  if (query && !row.full_name.toLowerCase().includes(query) && !row.email.toLowerCase().includes(query)) return false
+  if (query && !searchKeys.some((key) => searchText(row[key]).toLowerCase().includes(query))) return false
   return (Object.keys(filters) as K[]).every(
     (key) => filters[key].length === 0 || filters[key].includes(String(row[key])),
   )

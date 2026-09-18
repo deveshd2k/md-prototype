@@ -29,6 +29,7 @@
     --color-danger-600: #9a142b; /* System/Danger/600 */
     --color-success-200: #d8fce1; /* System/Success/200 */
     --color-success-400: #009c41; /* System/Success/400 */
+    --color-highlight-400: #ffd633; /* System/Highlight/400 — search matches */
     --color-avatar: #5ea8ff; /* DataViz/Categorical/1 */
 
     --shadow-card: 0 0 1px 0 rgb(52 58 63 / 0.1), 0 1px 5px 0 rgb(52 58 63 / 0.1);

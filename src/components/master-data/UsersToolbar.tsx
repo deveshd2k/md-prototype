@@ -51,7 +51,7 @@ export function UsersToolbar({ search, onSearchChange, filters, filterOptions, o
         </button>
       </div>
       <RegularButton size="s" onClick={onAddUser} icon={<img src={addIcon} alt="" className="size-5" />}>
-        Add user
+        Add users
       </RegularButton>
     </div>
   )

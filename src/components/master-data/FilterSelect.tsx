@@ -3,6 +3,7 @@ import chevronDown from '@/assets/figma/chevron-down.svg'
 import searchIcon from '@/assets/figma/search.svg'
 import { ActionButton } from '@/components/ui/action-button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Highlight } from '@/components/ui/highlight'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 type FilterSelectProps = {
@@ -117,6 +118,7 @@ export function FilterSelect({ label, options, selected, onChange, size = 's', f
                   label={option}
                   checked={draft.includes(option)}
                   onCheckedChange={(checked) => toggle(option, checked)}
+                  query={query}
                   highlight
                 />
               ))}
@@ -127,6 +129,7 @@ export function FilterSelect({ label, options, selected, onChange, size = 's', f
                   label={option}
                   checked={draft.includes(option)}
                   onCheckedChange={(checked) => toggle(option, checked)}
+                  query={query}
                   highlight
                 />
               ))}
@@ -154,11 +157,12 @@ type OptionRowProps = {
   label: string
   checked: boolean | 'indeterminate'
   onCheckedChange: (checked: boolean) => void
+  query?: string // search text to paint in the label
   highlight?: boolean
 }
 
 // "Parts / Dropdown / Menu Item / Multi": checked rows get the primary tint
-function OptionRow({ label, checked, onCheckedChange, highlight }: OptionRowProps) {
+function OptionRow({ label, checked, onCheckedChange, query = '', highlight }: OptionRowProps) {
   const active = highlight && checked === true
   return (
     <label
@@ -172,7 +176,7 @@ function OptionRow({ label, checked, onCheckedChange, highlight }: OptionRowProp
           active ? 'font-medium text-primary-500' : 'text-grey-1000'
         }`}
       >
-        {label}
+        <Highlight text={label} query={query} />
       </span>
     </label>
   )

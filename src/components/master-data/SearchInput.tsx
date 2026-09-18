@@ -13,7 +13,7 @@ type SearchInputProps = {
 // Design system "Input / Search", size S.
 // Hint: grey border · Hover: light fill, darker border · Active (typing): darkest border ·
 // a clear (✕) button shows while there is text and the field is hovered or focused.
-export function SearchInput({ value, onChange, autoFocus, placeholder = 'Search by name or email', fullWidth }: SearchInputProps) {
+export function SearchInput({ value, onChange, autoFocus, placeholder = 'Search', fullWidth }: SearchInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   return (
     <div

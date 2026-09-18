@@ -28,6 +28,9 @@ const columns: Column<OrgUser>[] = [
   { key: 'job_title', label: 'Job title', width: 200 },
 ]
 
+// The search looks at every column shown in the grid
+const searchKeys = columns.map((column) => column.key)
+
 type SelectUsersStepProps = {
   selectedIds: Set<string>
   onSelectionChange: (ids: Set<string>) => void
@@ -41,7 +44,7 @@ export function SelectUsersStep({ selectedIds, onSelectionChange }: SelectUsersS
   const [sort, setSort] = useState<Sort<keyof OrgUser & string>>(null)
 
   const visible = useMemo(
-    () => sortRows(people.filter((person) => matchesSearchAndFilters(person, search, filters)), sort),
+    () => sortRows(people.filter((person) => matchesSearchAndFilters(person, search, filters, searchKeys)), sort),
     [people, search, filters, sort],
   )
 
@@ -66,6 +69,7 @@ export function SelectUsersStep({ selectedIds, onSelectionChange }: SelectUsersS
         className="mt-3 min-h-0 flex-1 overflow-auto"
         rows={visible}
         columns={columns}
+        searchQuery={search}
         status={status}
         errorMessage={`Couldn’t load your organisation’s users. ${error?.message ?? ''}`}
         loadingMessage="Loading users…"

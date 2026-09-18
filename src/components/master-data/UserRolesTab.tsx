@@ -8,6 +8,7 @@ import { AssignRoleDialog } from '@/components/master-data/AssignRoleDialog'
 import { EditRoleScopeDialog } from '@/components/master-data/EditRoleScopeDialog'
 import { SearchInput } from '@/components/master-data/SearchInput'
 import { ConfirmModal } from '@/components/ui/confirm-modal'
+import { Highlight } from '@/components/ui/highlight'
 import { ContextMenu } from '@/components/ui/menu'
 import { RegularButton } from '@/components/ui/regular-button'
 import { useToast } from '@/components/ui/toast-context'
@@ -108,6 +109,7 @@ export function UserRolesTab({ user }: { user: User }) {
                   key={item.id}
                   name={item.role.name}
                   groups={groups}
+                  query={search}
                   onEdit={() => setEditing(item)}
                   onRemove={() => setRemoving(item)}
                 />
@@ -148,18 +150,22 @@ type ScopeGroup = { title: string; lines: { label: string; values: string }[] }
 function RoleCard({
   name,
   groups,
+  query,
   onEdit,
   onRemove,
 }: {
   name: string
   groups: ScopeGroup[]
+  query: string
   onEdit: () => void
   onRemove: () => void
 }) {
   return (
     <article className="relative flex flex-col gap-2 rounded-lg bg-grey-100 p-3">
       <div className="flex items-start gap-3">
-        <h4 className="min-w-0 flex-1 truncate text-base leading-6 font-semibold text-grey-1000">{name}</h4>
+        <h4 className="min-w-0 flex-1 truncate text-base leading-6 font-semibold text-grey-1000">
+          <Highlight text={name} query={query} />
+        </h4>
         <ContextMenu
           label={`Actions for ${name}`}
           items={[
@@ -190,7 +196,10 @@ function RoleCard({
                   {group.lines.map((line, index) => (
                     <span key={line.label}>
                       {index > 0 && ' • '}
-                      {line.label}: <span className="font-semibold">{line.values}</span>
+                      <Highlight text={line.label} query={query} />:{' '}
+                      <span className="font-semibold">
+                        <Highlight text={line.values} query={query} />
+                      </span>
                     </span>
                   ))}
                 </p>

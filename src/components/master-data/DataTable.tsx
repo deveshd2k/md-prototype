@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Highlight } from '@/components/ui/highlight'
 import type { Sort } from '@/lib/table'
 
 export type Column<T> = {
@@ -7,7 +8,7 @@ export type Column<T> = {
   label: string
   width: number
   strong?: boolean // darker text (Grey 1000) instead of Grey 900
-  render?: (row: T) => ReactNode
+  render?: (row: T, searchQuery: string) => ReactNode
   headerExtra?: ReactNode
 }
 
@@ -25,6 +26,7 @@ type DataTableProps<T extends { id: string }> = {
   selectedIds: Set<string>
   onSelectionChange: (ids: Set<string>) => void
   onRowClick?: (row: T) => void
+  searchQuery?: string // the current search, painted wherever it appears
   className?: string // scroll container; add a height + overflow-y to get a sticky header
 }
 
@@ -50,6 +52,7 @@ export function DataTable<T extends { id: string }>({
   selectedIds,
   onSelectionChange,
   onRowClick,
+  searchQuery = '',
   className = 'overflow-x-auto pb-3',
 }: DataTableProps<T>) {
   const [scrolled, setScrolled] = useState(false)
@@ -94,10 +97,10 @@ export function DataTable<T extends { id: string }>({
 
   const cell = (column: Column<T>, row: T) =>
     column.render ? (
-      column.render(row)
+      column.render(row, searchQuery)
     ) : (
       <p className={`truncate text-sm leading-[22px] ${column.strong ? 'text-grey-1000' : 'text-grey-900'}`}>
-        {String(row[column.key])}
+        <Highlight text={String(row[column.key])} query={searchQuery} />
       </p>
     )
 
